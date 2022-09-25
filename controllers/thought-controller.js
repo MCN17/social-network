@@ -6,7 +6,8 @@ const thoughtController = {
     getAllThoughts(req, res) {
         Thought.find({})
         .select("-__v")
-        .sort(dbThoughtData => res.json(dbThoughtData))
+        .sort({ __id: -1 })
+        .then(dbThoughtData => res.json(dbThoughtData))
         .catch(err => {
             console.log(err);
             res.status(400).json(err);
@@ -15,7 +16,7 @@ const thoughtController = {
 
     // get a thought by id 
     getThoughtById({ params }, res) {
-        Thought.findOne({ _id: params.id })
+        Thought.findOne({ _id: params.thoughtId })
         // .populate({
         //     path: "friends",
         //     select: "-__v",
@@ -27,7 +28,7 @@ const thoughtController = {
         .select("-__v")
         .then(dbThoughtData => {
             if (!dbThoughtData) {
-                res.status(400).json({ message: "No user found with this id!" });
+                res.status(400).json({ message: "No thought found with this id!" });
                 return;
             }
             res.json(dbThoughtData);
@@ -88,23 +89,23 @@ const thoughtController = {
 
     // update thought by id 
     updateThought({ params, body }, res) {
-        Thought.findOneAndUpdate({ _id: params.id }, body, { new: true, runValidators: true })
+        Thought.findOneAndUpdate({ _id: params.thoughtId }, body, { new: true, runValidators: true })
         .then(dbThoughtData => {
             if (!dbThoughtData) {
-                res.status(404).json({ message: "No user found with this id!"});
+                res.status(404).json({ message: "No thought found with this id!"});
                 return;
             }
-            res.json(dbThoughtData0);
+            res.json(dbThoughtData);
         })
         .catch(err => res.status(400).json(err));
     }, 
 
     // delete thought by id 
     removeThought({ params }, res) {
-        Thought.findOneAndDelete({ _id: params.id })
+        Thought.findOneAndDelete({ _id: params.thoughtId })
         .then(dbThoughtData => {
             if (!dbThoughtData) {
-                res.status(404).json({ message: "No user found with this id!"});
+                res.status(404).json({ message: "No thought found with this id!"});
                 return;
             }
             res.json(dbThoughtData);
